@@ -85,7 +85,8 @@
 ;; Project Methods
 ;;====================
 (defun redmine-current-project ()
-  (or (assoc redmine-project redmine-project-alist) (car redmine-project-alist)))
+  (or (assoc redmine-project redmine-project-alist)
+      (car redmine-project-alist)))
 
 (defun redmine-project-name (&optional project)
   (car (or project (redmine-current-project))))
@@ -106,7 +107,9 @@
 (defun redmine-project-entries (action &optional project)
   (let* ((uri (redmine-action-uri action project))
          (entries (redmine-xml->entries (redmine-get-xml uri))))
-    (mapcar (lambda (e) (concat (redmine-entry-get-attr e 'title) "\t" (redmine-entry-get-attr e 'id))) entries)))
+    (mapcar (lambda (e) (concat (redmine-entry-get-attr e 'title)
+                                "\t" (redmine-entry-get-attr e 'id)))
+            entries)))
 
 ;;====================
 ;; Functions
@@ -115,16 +118,19 @@
   (setq redmine-project-alist
         (cons
          (assoc name redmine-project-alist)
-         (remove-if (lambda (e) (equal name (car e))) redmine-project-alist))))
+         (remove-if (lambda (e) (equal name (car e)))
+                    redmine-project-alist))))
 
 (defun redmine-show-anything (lbl action &optional project)
   (anything
    `(((name . ,lbl)
       (candidates . ,(redmine-project-entries action project))
-      (candidate-transformer . (lambda (candidates)
-                                 (mapcar
-                                  (lambda (c) (apply 'cons (split-string c "\t")))
-                                  candidates)))
+      (candidate-transformer .
+                             (lambda (candidates)
+                               (mapcar
+                                (lambda (c)
+                                  (apply 'cons (split-string c "\t")))
+                                candidates)))
       (volatile)
       (action . browse-url)))))
 
@@ -152,7 +158,8 @@
       (action . (lambda (project-name)
                   (setq redmine-project project-name)
                   (redmine-project-put-first! project-name)
-                  (message (format "Redmine Project was changed to \"%s\"." project-name))))))))
+                  (message (format "Redmine Project was changed to \"%s\"."
+                                   project-name))))))))
 
 (provide 'redmine)
 ;;; redmine.el ends here
