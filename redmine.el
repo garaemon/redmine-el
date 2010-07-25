@@ -64,13 +64,15 @@
 ;;====================
 (defvar redmine-project nil "Use this project as default")
 (defvar redmine-project-alist '(nil) "Your Redmines assoc list")
-
+(defvar redmine-curl-options nil
+  "you can specify curl option by this variable")
 ;;====================
 ;; For XML
 ;;====================
 (defun redmine-get-xml (uri)
   (car (with-temp-buffer
-         (call-process "curl" nil (current-buffer) nil uri "-s")
+         (apply #'call-process "curl" nil (current-buffer) nil uri "-s"
+                redmine-curl-options)
          (xml-parse-region (point-min) (point-max)))))
 
 (defun redmine-xml->entries (xml)
